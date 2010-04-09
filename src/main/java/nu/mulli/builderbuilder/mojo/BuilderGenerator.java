@@ -3,6 +3,8 @@ package nu.mulli.builderbuilder.mojo;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
@@ -10,6 +12,7 @@ import org.antlr.stringtemplate.StringTemplateGroup;
 import com.thoughtworks.qdox.model.DocletTag;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaMethod;
+import com.thoughtworks.qdox.model.JavaParameter;
 
 /**
  * Generates the actual java code for the generator class.
@@ -50,7 +53,12 @@ public class BuilderGenerator {
 					st.setAttribute("builderName", builderName);
 					st.setAttribute("resultClass", jc.asType().toString());
 					st.setAttribute("createMethod", createMethod);
-					st.setAttribute("parameters", m.getParameters());
+
+					List<Param> ps = new LinkedList<Param>();
+					for(JavaParameter p: m.getParameters()) {
+					    ps.add(new Param(p.getType().toGenericString(), p.getName()));
+					}
+					st.setAttribute("parameters", ps);
 
 					File pd = new File(outputDirectory, jc.getPackageName().replaceAll("\\.", "/"));
 					pd.mkdirs();
@@ -69,6 +77,15 @@ public class BuilderGenerator {
 		}
 	}
 
+	public static class Param {
+		public final String type;
+		public final String name;
+		
+		public Param(String type, String name) {
+			this.type = type;
+			this.name = name;
+		}
+	}
 
 	
 }
