@@ -1,8 +1,8 @@
 group builderbuilder;
 
-parameter(param, resultClass) ::= <<
+parameter(param, class) ::= <<
 protected <it.type> <it.name>;
-public <resultClass> <it.name>(<it.type> <it.name>) {
+public <class> <it.name>(<it.type> <it.name>) {
        this.<it.name> = <it.name>;
        return getThis();
 }
@@ -22,16 +22,13 @@ package <packageName>;
 
 public class <builderName> {
 
-       public <builderName>() {
-       }
-
        <create(...)>
 
-       protected <resultClass> getThis() {
+       protected <builderName> getThis() {
        		 return this;
        }
 
-       <parameters:parameter(resultClass=resultClass,...)>
+       <parameters:parameter(class=builderName,...)>
        
 }
 >>
@@ -39,18 +36,13 @@ public class <builderName> {
 abstractBuilder(packageName, builderName, resultClass, createMethod, parameters) ::= <<
 package <packageName>;
 
-public abstract class <builderName>\<T extends <resultClass>\> {
-
-       public <builderName>() {
-       }
+public abstract class <builderName>\<B extends <builderName>\<B, T\>, T extends <resultClass>\> {
 
        <create(...)>
 
-       protected T getThis() {
-       		 return this;
-       }
+       protected abstract B getThis();
 
-       <parameters:parameter(resultClass="T",...)>
+       <parameters:parameter(class="B",...)>
        
 }
 >>

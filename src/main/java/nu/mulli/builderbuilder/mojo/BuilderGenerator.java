@@ -1,6 +1,7 @@
 package nu.mulli.builderbuilder.mojo;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import org.antlr.stringtemplate.StringTemplate;
@@ -9,7 +10,6 @@ import org.antlr.stringtemplate.StringTemplateGroup;
 import com.thoughtworks.qdox.model.DocletTag;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaMethod;
-import com.thoughtworks.qdox.model.JavaParameter;
 
 /**
  * Generates the actual java code for the generator class.
@@ -51,6 +51,17 @@ public class BuilderGenerator {
 					st.setAttribute("resultClass", jc.asType().toString());
 					st.setAttribute("createMethod", createMethod);
 					st.setAttribute("parameters", m.getParameters());
+
+					File pd = new File(outputDirectory, jc.getPackageName().replaceAll("\\.", "/"));
+					pd.mkdirs();
+
+					FileWriter out = new FileWriter(new File(pd, builderName + ".java"));
+					try {
+						out.append(st.toString());
+					} finally {
+						out.flush();
+						out.close();
+					}
 
 					System.out.println(st.toString());
 				} 

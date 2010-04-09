@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.antlr.stringtemplate.StringTemplateGroup;
 import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.project.MavenProject;
 
 import com.thoughtworks.qdox.JavaDocBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
@@ -16,8 +17,17 @@ import com.thoughtworks.qdox.model.JavaClass;
  * @phase generate-sources
  */
 public class BuilderBuilderMojo extends AbstractMojo {
+
 	/**
-	 * Resources
+	 * @parameter expression="${project}"
+	 * @required
+	 * @readonly
+	 * @since 1.0
+	 */
+    private MavenProject project;
+
+	/**
+	 * Sources
 	 * 
 	 * @parameter
 	 * @required
@@ -50,8 +60,10 @@ public class BuilderBuilderMojo extends AbstractMojo {
 				generator.generateBuilderFor(jc);
 			}
 
+			project.addCompileSourceRoot(outputDirectory.getAbsolutePath());
+
 		} catch (Exception e) {
-			e.printStackTrace();
+			getLog().error("General error", e);
 		}
 	}
 }
