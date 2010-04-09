@@ -1,4 +1,4 @@
-package nu.mulli.builderbuilder.mojo;
+package nu.mulli.builderbuilder;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.antlr.stringtemplate.StringTemplate;
-import org.antlr.stringtemplate.StringTemplateGroup;
 
 import com.thoughtworks.qdox.model.DocletTag;
 import com.thoughtworks.qdox.model.JavaClass;
@@ -15,17 +14,18 @@ import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaParameter;
 
 /**
- * Generates the actual java code for the generator class.
+ * @goal generate-sources
+ * @phase generate-sources
  */
-public class BuilderGenerator {
-	private File outputDirectory;
-	private StringTemplateGroup templateGroup;
-    
-	public BuilderGenerator(File outputDirectory, StringTemplateGroup templateGroup) {
-		this.outputDirectory = outputDirectory;
-		this.templateGroup = templateGroup;
+public class BuilderBuilderMojo extends AbstractCodeGeneratorMojo {
+
+	@Override
+	public void generate() throws Exception {
+		for (JavaClass jc : docBuilder.getClasses()) {
+			generateBuilderFor(jc);
+		}
 	}
-	
+
 	public void generateBuilderFor(JavaClass jc) throws IOException {
 		outputDirectory.mkdirs();
 		for(JavaMethod m: jc.getMethods()) {
@@ -46,7 +46,7 @@ public class BuilderGenerator {
 					if (createMethod == null)
 						createMethod = "create";
 
-					StringTemplate st = templateGroup.getInstanceOf(
+					StringTemplate st = templates.getInstanceOf(
 						builderAbstract ? "abstractBuilder" : "builder");
 
 					st.setAttribute("packageName", jc.getPackageName());
@@ -71,7 +71,10 @@ public class BuilderGenerator {
 						out.close();
 					}
 
-					System.out.println(st.toString());
+					if (getLog().isDebugEnabled()) {
+						getLog().debug(builderName + ".java :");
+						getLog().debug(st.toString());
+					} 
 				} 
 			} 
 		}
@@ -86,6 +89,4 @@ public class BuilderGenerator {
 			this.name = name;
 		}
 	}
-
-	
 }

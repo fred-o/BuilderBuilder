@@ -1,4 +1,4 @@
-package nu.mulli.builderbuilder.mojo;
+package nu.mulli.builderbuilder;
 
 import java.io.File;
 import java.io.InputStream;
@@ -10,13 +10,8 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.project.MavenProject;
 
 import com.thoughtworks.qdox.JavaDocBuilder;
-import com.thoughtworks.qdox.model.JavaClass;
 
-/**
- * @goal generate-sources
- * @phase generate-sources
- */
-public class BuilderBuilderMojo extends AbstractMojo {
+public abstract class AbstractCodeGeneratorMojo extends AbstractMojo {
 
 	/**
 	 * @parameter expression="${project}"
@@ -24,7 +19,7 @@ public class BuilderBuilderMojo extends AbstractMojo {
 	 * @readonly
 	 * @since 1.0
 	 */
-    private MavenProject project;
+	MavenProject project;
 
 	/**
 	 * Sources
@@ -40,25 +35,25 @@ public class BuilderBuilderMojo extends AbstractMojo {
 	 */
 	File outputDirectory;
 
+	StringTemplateGroup templates;
+	JavaDocBuilder docBuilder;
+
 	@Override
 	public void execute() {
 		try {
-			System.out.println("OUTPUT: " + outputDirectory.getAbsolutePath());
-
 			InputStream is = BuilderBuilderMojo.class.getClassLoader().getResourceAsStream("builderbuilder.stg");
-			StringTemplateGroup templates = new StringTemplateGroup(new InputStreamReader(is));
+			try {
+				this.templates = new StringTemplateGroup(new InputStreamReader(is));
+			} finally {
+				is.close();
+			}
 
-			BuilderGenerator generator = new BuilderGenerator(outputDirectory, templates);
-			JavaDocBuilder docBuilder = new JavaDocBuilder();
-
+			this.docBuilder = new JavaDocBuilder();
 			for (String r : sources) {
-				System.out.println("SOURCE: " + r);
 				docBuilder.addSourceTree(new File(r));
 			}
-			for (JavaClass jc : docBuilder.getClasses()) {
-				System.out.println("CLASS: " + jc.toString());
-				generator.generateBuilderFor(jc);
-			}
+
+			generate();
 
 			project.addCompileSourceRoot(outputDirectory.getAbsolutePath());
 
@@ -66,4 +61,7 @@ public class BuilderBuilderMojo extends AbstractMojo {
 			getLog().error("General error", e);
 		}
 	}
+
+	protected abstract  void generate() throws Exception;
+
 }
