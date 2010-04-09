@@ -1,0 +1,57 @@
+group builderbuilder;
+
+parameter(param, resultClass) ::= <<
+protected <it.type> <it.name>;
+public <resultClass> <it.name>(<it.type> <it.name>) {
+       this.<it.name> = <it.name>;
+       return getThis();
+}
+
+
+>>
+
+create() ::= <<
+public <resultClass> create() {
+       return new <resultClass>(<parameters:{<it.name>}; separator=", ">);
+}
+
+>>
+
+builder(packageName, builderName, resultClass, createMethod, parameters) ::= <<
+package <packageName>;
+
+public class <builderName> {
+
+       public <builderName>() {
+       }
+
+       <create(...)>
+
+       protected <resultClass> getThis() {
+       		 return this;
+       }
+
+       <parameters:parameter(resultClass=resultClass,...)>
+       
+}
+>>
+
+abstractBuilder(packageName, builderName, resultClass, createMethod, parameters) ::= <<
+package <packageName>;
+
+public abstract class <builderName>\<T extends <resultClass>\> {
+
+       public <builderName>() {
+       }
+
+       <create(...)>
+
+       protected T getThis() {
+       		 return this;
+       }
+
+       <parameters:parameter(resultClass="T",...)>
+       
+}
+>>
+
