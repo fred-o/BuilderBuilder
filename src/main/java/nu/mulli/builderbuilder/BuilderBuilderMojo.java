@@ -27,11 +27,12 @@ public class BuilderBuilderMojo extends AbstractCodeGeneratorMojo {
 	}
 
 	public void generateBuilderFor(JavaClass jc) throws IOException {
-		outputDirectory.mkdirs();
 		for(JavaMethod m: jc.getMethods()) {
 		    if (m.isConstructor()) {
 				DocletTag dc = m.getTagByName("builder");
 				if (dc != null) {
+					System.out.println("CLASS: " + jc.asType());
+
 					boolean builderAbstract = Boolean.valueOf(dc.getNamedParameter("abstract"));
 
 					String builderName = dc.getNamedParameter("name");
@@ -46,10 +47,13 @@ public class BuilderBuilderMojo extends AbstractCodeGeneratorMojo {
 					if (createMethod == null)
 						createMethod = "create";
 
+					String packageName = dc.getNamedParameter("package");
+					if (packageName == null) jc.getPackageName();
+
 					StringTemplate st = templates.getInstanceOf(
 						builderAbstract ? "abstractBuilder" : "builder");
 
-					st.setAttribute("packageName", jc.getPackageName());
+					st.setAttribute("packageName", packageName);
 					st.setAttribute("builderName", builderName);
 					st.setAttribute("resultClass", jc.asType().toString());
 					st.setAttribute("createMethod", createMethod);
@@ -60,7 +64,7 @@ public class BuilderBuilderMojo extends AbstractCodeGeneratorMojo {
 					}
 					st.setAttribute("parameters", ps);
 
-					File pd = new File(outputDirectory, jc.getPackageName().replaceAll("\\.", "/"));
+					File pd = new File(outputDirectory, packageName.replaceAll("\\.", "/"));
 					pd.mkdirs();
 
 					FileWriter out = new FileWriter(new File(pd, builderName + ".java"));
