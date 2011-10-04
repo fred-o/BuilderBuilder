@@ -31,8 +31,6 @@ public class BuilderBuilderMojo extends AbstractCodeGeneratorMojo {
 		    if (m.isConstructor()) {
 				DocletTag dc = m.getTagByName("builder");
 				if (dc != null) {
-					System.out.println("CLASS: " + jc.asType());
-
 					boolean builderAbstract = Boolean.valueOf(dc.getNamedParameter("abstract"));
 
 					String builderName = dc.getNamedParameter("name");
@@ -48,7 +46,8 @@ public class BuilderBuilderMojo extends AbstractCodeGeneratorMojo {
 						createMethod = "create";
 
 					String packageName = dc.getNamedParameter("package");
-					if (packageName == null) jc.getPackageName();
+					if (packageName == null) 
+						packageName = jc.getPackageName();
 
 					StringTemplate st = templates.getInstanceOf(
 						builderAbstract ? "abstractBuilder" : "builder");
