@@ -46,8 +46,10 @@ public class BuilderBuilderMojo extends AbstractCodeGeneratorMojo {
 						createMethod = "create";
 
 					String packageName = dc.getNamedParameter("package");
-					if (packageName == null) 
+					if (packageName == null)
 						packageName = jc.getPackageName();
+
+                    String extendsClass = dc.getNamedParameter("extends");
 
 					StringTemplate st = templates.getInstanceOf(
 						builderAbstract ? "abstractBuilder" : "builder");
@@ -56,6 +58,7 @@ public class BuilderBuilderMojo extends AbstractCodeGeneratorMojo {
 					st.setAttribute("builderName", builderName);
 					st.setAttribute("resultClass", jc.asType().toString());
 					st.setAttribute("createMethod", createMethod);
+                    st.setAttribute("extendsClass", extendsClass);
 
 					List<Param> ps = new LinkedList<Param>();
 					for(JavaParameter p: m.getParameters()) {
@@ -77,16 +80,16 @@ public class BuilderBuilderMojo extends AbstractCodeGeneratorMojo {
 					if (getLog().isDebugEnabled()) {
 						getLog().debug(builderName + ".java :");
 						getLog().debug(st.toString());
-					} 
-				} 
-			} 
+					}
+				}
+			}
 		}
 	}
 
 	public static class Param {
 		public final String type;
 		public final String name;
-		
+
 		public Param(String type, String name) {
 			this.type = type;
 			this.name = name;

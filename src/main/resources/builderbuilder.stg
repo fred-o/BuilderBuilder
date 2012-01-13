@@ -17,10 +17,16 @@ public <resultClass> create() {
 
 >>
 
-builder(packageName, builderName, resultClass, createMethod, parameters) ::= <<
+extends(extendsClass, resultClass) ::= <<
+<if(extendsClass)>
+extends <extendsClass>\<B, <resultClass>\>
+<endif>
+>>
+
+builder(packageName, builderName, resultClass, createMethod, parameters, extendsClass) ::= <<
 package <packageName>;
 
-public class <builderName> {
+public class <builderName> <extends(...)> {
 
        <create(...)>
 
@@ -29,21 +35,21 @@ public class <builderName> {
        }
 
        <parameters:parameter(class=builderName,...)>
-       
+
 }
 >>
 
-abstractBuilder(packageName, builderName, resultClass, createMethod, parameters) ::= <<
+abstractBuilder(packageName, builderName, resultClass, createMethod, parameters, extendsClass) ::= <<
 package <packageName>;
 
-public abstract class <builderName>\<B extends <builderName>\<B, T\>, T extends <resultClass>\> {
+public abstract class <builderName>\<B extends <builderName>\<B, T\>, T extends <resultClass>\>  <extends(...)> {
 
        <create(...)>
 
        protected abstract B getThis();
 
        <parameters:parameter(class="B",...)>
-       
+
 }
 >>
 
