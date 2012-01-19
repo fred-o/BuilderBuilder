@@ -61,10 +61,15 @@ public class BuilderBuilderMojo extends AbstractCodeGeneratorMojo {
                     st.setAttribute("extendsClass", extendsClass);
 
 					List<Param> ps = new LinkedList<Param>();
+					List<Param> cs = new LinkedList<Param>();
 					for(JavaParameter p: m.getParameters()) {
-					    ps.add(new Param(p.getType().toGenericString(), p.getName()));
+                        Param param = new Param(p.getType().toGenericString(), p.getName());
+                        if (!p.getName().startsWith("_"))
+                            ps.add(param);
+                        cs.add(param);
 					}
 					st.setAttribute("parameters", ps);
+                    st.setAttribute("arguments", cs);
 
 					File pd = new File(outputDirectory, packageName.replaceAll("\\.", "/"));
 					pd.mkdirs();

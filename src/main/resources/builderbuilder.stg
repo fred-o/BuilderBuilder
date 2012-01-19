@@ -12,7 +12,7 @@ public <class> <it.name>(<it.type> <it.name>) {
 
 create() ::= <<
 public <resultClass> create() {
-       return new <resultClass>(<parameters:{<it.name>}; separator=", ">);
+       return new <resultClass>(<arguments:{<it.name>}; separator=", ">);
 }
 
 >>
@@ -23,7 +23,7 @@ extends <extendsClass>\<B, <resultClass>\>
 <endif>
 >>
 
-builder(packageName, builderName, resultClass, createMethod, parameters, extendsClass) ::= <<
+builder(packageName, builderName, resultClass, createMethod, parameters, arguments, extendsClass) ::= <<
 package <packageName>;
 
 public class <builderName> <extends(...)> {
@@ -39,7 +39,7 @@ public class <builderName> <extends(...)> {
 }
 >>
 
-abstractBuilder(packageName, builderName, resultClass, createMethod, parameters, extendsClass) ::= <<
+abstractBuilder(packageName, builderName, resultClass, createMethod, parameters, arguments, extendsClass) ::= <<
 package <packageName>;
 
 public abstract class <builderName>\<B extends <builderName>\<B, T\>, T extends <resultClass>\>  <extends(...)> {

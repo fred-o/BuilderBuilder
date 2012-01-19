@@ -23,7 +23,7 @@ public abstract class AbstractCodeGeneratorMojo extends AbstractMojo {
 
 	/**
 	 * Sources
-	 * 
+	 *
 	 * @parameter
 	 * @required
 	 */
